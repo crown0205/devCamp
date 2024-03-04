@@ -19,11 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { userSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
+import { get } from "http";
 import { ArrowRight } from "lucide-react";
-//
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -34,32 +35,71 @@ type IStep = "info" | "password";
 export default function Home() {
   const [step, setStep] = useState<IStep>("info");
 
+  // TODO : 필요없은 기능 제거
   const {
     register,
     control,
-    getFieldState,
     getValues,
-    formState: { errors, isValid, validatingFields },
+    formState: { errors },
+    clearErrors,
     handleSubmit,
   } = useForm<IUserSchema>({
     resolver: zodResolver(userSchema),
     mode: "onChange",
+    shouldFocusError: false,
   });
+  const { toast } = useToast();
 
-  const handleNext = (data: IUserSchema) => {
-    // setStep("password");
+  const onNext = () => {
+    console.log("click");
 
-    console.log({ errors, data });
+    handleSubmit((data) => {})() //
+      .then(() => {
+        const { name, email, phone, roles } = errors;
+        const {
+          name: nameValue,
+          email: emailValue,
+          phone: phoneValue,
+          roles: rolesValue,
+        } = getValues();
+
+        if (
+          !nameValue ||
+          !emailValue ||
+          !phoneValue ||
+          rolesValue === undefined
+        ) {
+          return;
+        }
+
+        clearErrors();
+        setStep("password");
+      });
   };
 
-  const handlePrev = () => {
+  const onPrev = () => {
     setStep("info");
   };
 
   const handleSignup = () => {
     console.log("signup");
-    console.log(getValues());
+    const { password, passwordConfirm } = errors;
+    if (password || passwordConfirm) return;
+
+    if (getValues("password") !== getValues("passwordConfirm")) {
+      toast({
+        variant: "destructive",
+        title: "비밀번호가 일치하지 않습니다.",
+      });
+      return;
+    }
+
+    alert(JSON.stringify(getValues(), null, 2));
   };
+
+  useEffect(() => {
+    console.log(getValues());
+  }, [getValues]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -69,14 +109,14 @@ export default function Home() {
           <CardDescription>필수 정보를 입력해볼게요.</CardDescription>
         </CardHeader>
 
-        <div className={clsx("flex transition overflow-hidden")}>
-          <CardContent
-            className={clsx(
-              "pb-0 min-w-full",
-              step === "info" ? "-translate-x-0" : "translate-x-[-100%]"
-            )}
-          >
-            <form>
+        <form action="none">
+          <div className={clsx("flex transition overflow-hidden")}>
+            <CardContent
+              className={clsx(
+                "pb-0 min-w-full",
+                step === "info" ? "-translate-x-0" : "translate-x-[-100%]"
+              )}
+            >
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5 gap-1">
                   <Label
@@ -128,7 +168,6 @@ export default function Home() {
                     </ErrorText>
                   )}
                 </div>
-
                 <div className="flex flex-col space-y-1.5 gap-1">
                   <Label
                     className={clsx(errors.roles && "text-red-500")}
@@ -145,14 +184,12 @@ export default function Home() {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <SelectTrigger id="roles">
+                        <SelectTrigger id="roles" ref={field.ref}>
                           <SelectValue placeholder="역할을 선택해주세요" />
                         </SelectTrigger>
-                        <SelectContent position="popper">
-                          <SelectGroup>
-                            <SelectItem value="admin">관리자</SelectItem>
-                            <SelectItem value="user">일반 사용자</SelectItem>
-                          </SelectGroup>
+                        <SelectContent>
+                          <SelectItem value="admin">관리자</SelectItem>
+                          <SelectItem value="user">일반 사용자</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -164,15 +201,13 @@ export default function Home() {
                   )}
                 </div>
               </div>
-            </form>
-          </CardContent>
-          <CardContent
-            className={clsx(
-              "flex flex-col gap-4 min-w-full",
-              step === "password" ? "-translate-x-[100%]" : "translate-x-0"
-            )}
-          >
-            <form className="flex flex-col gap-4">
+            </CardContent>
+            <CardContent
+              className={clsx(
+                "flex flex-col gap-4 min-w-full",
+                step === "password" ? "-translate-x-[100%]" : "translate-x-0"
+              )}
+            >
               <div className="flex flex-col space-y-1.5 gap-1">
                 <Label
                   className={clsx(errors.password && "text-red-500")}
@@ -180,7 +215,12 @@ export default function Home() {
                 >
                   비밀번호
                 </Label>
-                <Input id="password" placeholder="" {...register("password")} />
+                <Input
+                  type="password"
+                  id="password"
+                  placeholder=""
+                  {...register("password")}
+                />
                 {errors?.password && (
                   <ErrorText className="text-red-500 font-semibold">
                     {errors.password?.message}
@@ -195,6 +235,7 @@ export default function Home() {
                   비밀번호 확인
                 </Label>
                 <Input
+                  type="password"
                   id="passwordConfirm"
                   placeholder=""
                   {...register("passwordConfirm")}
@@ -205,20 +246,31 @@ export default function Home() {
                   </ErrorText>
                 )}
               </div>
-            </form>
-          </CardContent>
-        </div>
-        <CardFooter className="flex justify-start gap-2 mt-3">
-          <Button className="flex gap-2" onClick={handleSubmit(handleNext)}>
-            다음 단계로 <ArrowRight className="h-4 w-4" />
-          </Button>
+            </CardContent>
+          </div>
+        </form>
 
-          <Button className="flex" onClick={handleSignup}>
-            계정 등록하기
-          </Button>
-          <Button variant="secondary" onClick={handlePrev}>
-            이전 단계로
-          </Button>
+        <CardFooter className="flex justify-start gap-2 mt-3">
+          {step === "info" ? (
+            <Button
+              onClick={onNext}
+              className={clsx(
+                "flex items-center gap-2",
+                step !== "info" && "hidden"
+              )}
+            >
+              다음 단계로 <ArrowRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <>
+              <Button className="flex" onClick={handleSignup}>
+                계정 등록하기
+              </Button>
+              <Button variant="secondary" onClick={onPrev}>
+                이전 단계로
+              </Button>
+            </>
+          )}
         </CardFooter>
       </Card>
     </main>
