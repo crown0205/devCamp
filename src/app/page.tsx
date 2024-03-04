@@ -1,5 +1,6 @@
 "use client";
 import ErrorText from "@/components/atom/text/ErrorText";
+import FormInput from "@/components/molecules/FormInput";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -70,7 +71,6 @@ export default function Home() {
 
   const handleSignup = () => {
     const { password, passwordConfirm } = errors;
-
     const { password: passwordValue, passwordConfirm: passwordConfirmValue } =
       getValues();
 
@@ -84,6 +84,42 @@ export default function Home() {
 
     alert(JSON.stringify(getValues(), null, 2));
   };
+
+  const infoConstants = [
+    {
+      id: "name",
+      label: "이름",
+      placeholder: "홍길동",
+      error: errors?.name,
+    },
+    {
+      id: "email",
+      label: "이메일",
+      placeholder: "hello@sparta-devcamp.com",
+      error: errors?.email,
+    },
+    {
+      id: "phone",
+      label: "연락처",
+      placeholder: "01000000000",
+      error: errors?.phone,
+    },
+  ];
+
+  const passwordConstants = [
+    {
+      id: "password",
+      type: "password",
+      label: "비밀번호",
+      error: errors?.password,
+    },
+    {
+      id: "passwordConfirm",
+      type: "password",
+      label: "비밀번호 확인",
+      error: errors?.passwordConfirm,
+    },
+  ];
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -102,56 +138,16 @@ export default function Home() {
               )}
             >
               <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label
-                    className={clsx(errors?.name && "text-red-500")}
-                    htmlFor="name"
-                  >
-                    이름
-                  </Label>
-                  <Input id="name" placeholder="홍길동" {...register("name")} />
-                  {errors?.name && (
-                    <ErrorText className="text-red-500 font-semibold">
-                      {errors.name?.message}
-                    </ErrorText>
-                  )}
-                </div>
-                <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label
-                    className={clsx(errors?.email && "text-red-500")}
-                    htmlFor="email"
-                  >
-                    이메일
-                  </Label>
-                  <Input
-                    id="email"
-                    placeholder="hello@sparta-devcamp.com"
-                    {...register("email")}
+                {infoConstants.map((constant) => (
+                  <FormInput
+                    key={constant.id}
+                    label={constant.label}
+                    id={constant.id}
+                    placeholder={constant.placeholder}
+                    error={constant.error}
+                    register={register}
                   />
-                  {errors?.email && (
-                    <ErrorText className="text-red-500 font-semibold">
-                      {errors.email?.message}
-                    </ErrorText>
-                  )}
-                </div>
-                <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label
-                    className={clsx(errors.phone && "text-red-500")}
-                    htmlFor="phone"
-                  >
-                    연락처
-                  </Label>
-                  <Input
-                    id="phone"
-                    placeholder="01000000000"
-                    {...register("phone")}
-                  />
-                  {errors?.phone && (
-                    <ErrorText className="text-red-500 font-semibold">
-                      {errors.phone?.message}
-                    </ErrorText>
-                  )}
-                </div>
+                ))}
                 <div className="flex flex-col space-y-1.5 gap-1">
                   <Label
                     className={clsx(errors.roles && "text-red-500")}
@@ -192,44 +188,17 @@ export default function Home() {
                 step === "password" ? "-translate-x-[100%]" : "translate-x-0"
               )}
             >
-              <div className="flex flex-col space-y-1.5 gap-1">
-                <Label
-                  className={clsx(errors.password && "text-red-500")}
-                  htmlFor="password"
-                >
-                  비밀번호
-                </Label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder=""
-                  {...register("password")}
-                />
-                {errors?.password && (
-                  <ErrorText className="text-red-500 font-semibold">
-                    {errors.password?.message}
-                  </ErrorText>
-                )}
-              </div>
-              <div className="flex flex-col space-y-1.5 gap-1">
-                <Label
-                  className={clsx(errors.passwordConfirm && "text-red-500")}
-                  htmlFor="passwordConfirm"
-                >
-                  비밀번호 확인
-                </Label>
-                <Input
-                  type="password"
-                  id="passwordConfirm"
-                  placeholder=""
-                  {...register("passwordConfirm")}
-                />
-                {errors?.passwordConfirm && (
-                  <ErrorText className="text-red-500 font-semibold">
-                    {errors.passwordConfirm?.message}
-                  </ErrorText>
-                )}
-              </div>
+              {passwordConstants.map((constant) => {
+                return (
+                  <FormInput
+                    key={constant.id}
+                    id={constant.id}
+                    type={constant.type as "password"}
+                    label={constant.label}
+                    register={register}
+                  />
+                );
+              })}
             </CardContent>
           </div>
           <CardFooter className="flex justify-start gap-2 mt-3">
