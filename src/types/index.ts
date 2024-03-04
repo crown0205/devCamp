@@ -18,37 +18,6 @@ export const infoSchema = z.object({
     .refine((value) => value === "admin" || value === "user", {
       message: "역할을 선택해주세요",
     }),
-  // password: z
-  //   .string()
-  //   .min(6, { message: "비밀번호는 최소 6자리 이상이어야 합니다" })
-  //   .max(20)
-  //   .refine(
-  //     (value) => {
-  //       const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/;
-  //       return regex.test(value);
-  //     },
-  //     {
-  //       message:
-  //         "비밀번호는 최소 6자리 이상, 영문, 숫자, 특수문자를 포함해야 합니다",
-  //     }
-  //   )
-  //   .optional(),
-
-  // passwordConfirm: z
-  //   .string()
-  //   .min(6, { message: "비밀번호는 최소 6자리 이상이어야 합니다" })
-  //   .max(20)
-  //   .refine(
-  //     (value) => {
-  //       const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/;
-  //       return regex.test(value);
-  //     },
-  //     {
-  //       message:
-  //         "비밀번호는 최소 6자리 이상, 영문, 숫자, 특수문자를 포함해야 합니다",
-  //     }
-  //   )
-  //   .optional(),
 });
 
 export const passwordSchema = z.object({
