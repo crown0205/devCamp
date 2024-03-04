@@ -140,42 +140,38 @@ export default function Home() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="flex w-full min-w-full"
             >
-              <CardContent className={clsx("pb-0 w-full")} ref={cardRef}>
-                <div className="grid w-full items-center gap-4">
-                  {infoConstants.map((constant) => (
-                    <FormInput
-                      key={constant.id}
-                      label={constant.label}
-                      id={constant.id}
-                      placeholder={constant.placeholder}
-                      error={constant.error}
-                      register={register}
-                    />
-                  ))}
-                  <FormSelect
-                    id="roles"
-                    label="역할"
-                    control={control}
-                    placeholder="역할을 선택해주세요"
-                    error={errors?.roles}
+              <CardContent
+                className={clsx("pb-0 w-full flex flex-col gap-4")}
+                ref={cardRef}
+              >
+                {infoConstants.map((constant) => (
+                  <FormInput
+                    key={constant.id}
+                    label={constant.label}
+                    id={constant.id}
+                    placeholder={constant.placeholder}
+                    error={constant.error}
+                    register={register}
                   />
-                </div>
+                ))}
+                <FormSelect
+                  id="roles"
+                  label="역할"
+                  control={control}
+                  placeholder="역할을 선택해주세요"
+                  error={errors?.roles}
+                />
               </CardContent>
             </motion.div>
 
             <motion.div
               animate={{
-                x: step === "password" ? 0 : animationCardWidth,
+                x: step === "password" ? -animationCardWidth : 0,
               }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="flex w-full min-w-full"
             >
-              <CardContent
-                className={clsx(
-                  "flex flex-col gap-4 min-w-full",
-                  step === "password" ? "-translate-x-[100%]" : "translate-x-0"
-                )}
-              >
+              <CardContent className={clsx("flex flex-col gap-4 min-w-full")}>
                 {passwordConstants.map((constant) => {
                   return (
                     <FormInput
