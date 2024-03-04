@@ -1,4 +1,5 @@
 "use client";
+import ErrorText from "@/components/atom/text/ErrorText";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,39 +14,42 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formValues } from "@/types";
+import { userSchema } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { ArrowRight } from "lucide-react";
 //
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-type IFormValues = z.infer<typeof formValues>;
+type IUserSchema = z.infer<typeof userSchema>;
 type IStep = "info" | "password";
 
 export default function Home() {
   const [step, setStep] = useState<IStep>("info");
 
-  const { handleSubmit, register } = useForm<IFormValues>({
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      roles: "",
-    },
+  const {
+    register,
+    control,
+    getFieldState,
+    getValues,
+    formState: { errors, isValid, validatingFields },
+    handleSubmit,
+  } = useForm<IUserSchema>({
+    resolver: zodResolver(userSchema),
+    mode: "onChange",
   });
 
-  const onSubmit = (data: IFormValues) => {
-    console.log(data);
-  };
+  const handleNext = (data: IUserSchema) => {
+    // setStep("password");
 
-  const handleNext = () => {
-    setStep("password");
+    console.log({ errors, data });
   };
 
   const handlePrev = () => {
@@ -54,6 +58,7 @@ export default function Home() {
 
   const handleSignup = () => {
     console.log("signup");
+    console.log(getValues());
   };
 
   return (
@@ -74,28 +79,89 @@ export default function Home() {
             <form>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label htmlFor="name">이름</Label>
-                  <Input id="name" placeholder="홍길동" />
+                  <Label
+                    className={clsx(errors?.name && "text-red-500")}
+                    htmlFor="name"
+                  >
+                    이름
+                  </Label>
+                  <Input id="name" placeholder="홍길동" {...register("name")} />
+                  {errors?.name && (
+                    <ErrorText className="text-red-500 font-semibold">
+                      {errors.name?.message}
+                    </ErrorText>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label htmlFor="email">이메일</Label>
-                  <Input id="email" placeholder="hello@sparta-devcamp.com" />
+                  <Label
+                    className={clsx(errors?.email && "text-red-500")}
+                    htmlFor="email"
+                  >
+                    이메일
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="hello@sparta-devcamp.com"
+                    {...register("email")}
+                  />
+                  {errors?.email && (
+                    <ErrorText className="text-red-500 font-semibold">
+                      {errors.email?.message}
+                    </ErrorText>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label htmlFor="phone">연락처</Label>
-                  <Input id="phone" placeholder="01000000000" />
+                  <Label
+                    className={clsx(errors.phone && "text-red-500")}
+                    htmlFor="phone"
+                  >
+                    연락처
+                  </Label>
+                  <Input
+                    id="phone"
+                    placeholder="01000000000"
+                    {...register("phone")}
+                  />
+                  {errors?.phone && (
+                    <ErrorText className="text-red-500 font-semibold">
+                      {errors.phone?.message}
+                    </ErrorText>
+                  )}
                 </div>
+
                 <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label htmlFor="roles">역활</Label>
-                  <Select>
-                    <SelectTrigger id="roles">
-                      <SelectValue placeholder="역할을 선택해주세요" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectItem value="admin">관리자</SelectItem>
-                      <SelectItem value="user">일반 사용자</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label
+                    className={clsx(errors.roles && "text-red-500")}
+                    htmlFor="roles"
+                  >
+                    역할
+                  </Label>
+                  <Controller
+                    name="roles"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger id="roles">
+                          <SelectValue placeholder="역할을 선택해주세요" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                          <SelectGroup>
+                            <SelectItem value="admin">관리자</SelectItem>
+                            <SelectItem value="user">일반 사용자</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors?.roles && (
+                    <ErrorText className="text-red-500 font-semibold">
+                      {errors.roles?.message}
+                    </ErrorText>
+                  )}
                 </div>
               </div>
             </form>
@@ -106,18 +172,44 @@ export default function Home() {
               step === "password" ? "-translate-x-[100%]" : "translate-x-0"
             )}
           >
-            <div className="flex flex-col space-y-1.5 gap-1">
-              <Label htmlFor="password">비밀번호</Label>
-              <Input id="password" placeholder="" />
-            </div>
-            <div className="flex flex-col space-y-1.5 gap-1">
-              <Label htmlFor="passwordCheck">비밀번호 확인</Label>
-              <Input id="passwordCheck" placeholder="" />
-            </div>
+            <form className="flex flex-col gap-4">
+              <div className="flex flex-col space-y-1.5 gap-1">
+                <Label
+                  className={clsx(errors.password && "text-red-500")}
+                  htmlFor="password"
+                >
+                  비밀번호
+                </Label>
+                <Input id="password" placeholder="" {...register("password")} />
+                {errors?.password && (
+                  <ErrorText className="text-red-500 font-semibold">
+                    {errors.password?.message}
+                  </ErrorText>
+                )}
+              </div>
+              <div className="flex flex-col space-y-1.5 gap-1">
+                <Label
+                  className={clsx(errors.passwordConfirm && "text-red-500")}
+                  htmlFor="passwordConfirm"
+                >
+                  비밀번호 확인
+                </Label>
+                <Input
+                  id="passwordConfirm"
+                  placeholder=""
+                  {...register("passwordConfirm")}
+                />
+                {errors?.passwordConfirm && (
+                  <ErrorText className="text-red-500 font-semibold">
+                    {errors.passwordConfirm?.message}
+                  </ErrorText>
+                )}
+              </div>
+            </form>
           </CardContent>
         </div>
         <CardFooter className="flex justify-start gap-2 mt-3">
-          <Button className="flex gap-2" onClick={handleNext}>
+          <Button className="flex gap-2" onClick={handleSubmit(handleNext)}>
             다음 단계로 <ArrowRight className="h-4 w-4" />
           </Button>
 
