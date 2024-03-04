@@ -1,6 +1,6 @@
 "use client";
-import ErrorText from "@/components/atom/text/ErrorText";
 import FormInput from "@/components/molecules/FormInput";
+import FormSelect from "@/components/molecules/FormSelect";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,22 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { infoSchema, passwordSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 type ISchema = z.infer<typeof infoSchema & typeof passwordSchema>;
@@ -33,7 +25,8 @@ type IStep = "info" | "password";
 
 export default function Home() {
   const [step, setStep] = useState<IStep>("info");
-
+  const [animationCardWidth, setAnimationCardWidth] = useState<number>(0);
+  const cardRef = useRef<HTMLDivElement>(null);
   const currentSchema = step === "info" ? infoSchema : passwordSchema;
 
   const {
@@ -121,6 +114,14 @@ export default function Home() {
     },
   ];
 
+  useEffect(() => {
+    if (cardRef.current) {
+      setAnimationCardWidth(cardRef.current.offsetWidth);
+    }
+  }, []);
+
+  console.log({ animationCardWidth });
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <Card className="w-[350px]">
@@ -129,77 +130,67 @@ export default function Home() {
           <CardDescription>필수 정보를 입력해볼게요.</CardDescription>
         </CardHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={clsx("flex transition overflow-hidden")}>
-            <CardContent
-              className={clsx(
-                "pb-0 min-w-full",
-                step === "info" ? "-translate-x-0" : "translate-x-[-100%]"
-              )}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full overflow-hidden relative"
+        >
+          <div className={clsx("flex")}>
+            <motion.div
+              animate={{
+                x: step === "info" ? 0 : -animationCardWidth,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="flex w-full min-w-full"
             >
-              <div className="grid w-full items-center gap-4">
-                {infoConstants.map((constant) => (
-                  <FormInput
-                    key={constant.id}
-                    label={constant.label}
-                    id={constant.id}
-                    placeholder={constant.placeholder}
-                    error={constant.error}
-                    register={register}
-                  />
-                ))}
-                <div className="flex flex-col space-y-1.5 gap-1">
-                  <Label
-                    className={clsx(errors.roles && "text-red-500")}
-                    htmlFor="roles"
-                  >
-                    역할
-                  </Label>
-                  <Controller
-                    name="roles"
+              <CardContent className={clsx("pb-0 w-full")} ref={cardRef}>
+                <div className="grid w-full items-center gap-4">
+                  {infoConstants.map((constant) => (
+                    <FormInput
+                      key={constant.id}
+                      label={constant.label}
+                      id={constant.id}
+                      placeholder={constant.placeholder}
+                      error={constant.error}
+                      register={register}
+                    />
+                  ))}
+                  <FormSelect
+                    id="roles"
+                    label="역할"
                     control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger id="roles" ref={field.ref}>
-                          <SelectValue placeholder="역할을 선택해주세요" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">관리자</SelectItem>
-                          <SelectItem value="user">일반 사용자</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
+                    placeholder="역할을 선택해주세요"
+                    error={errors?.roles}
                   />
-                  {errors?.roles && (
-                    <ErrorText className="text-red-500 font-semibold">
-                      {errors.roles?.message}
-                    </ErrorText>
-                  )}
                 </div>
-              </div>
-            </CardContent>
-            <CardContent
-              className={clsx(
-                "flex flex-col gap-4 min-w-full",
-                step === "password" ? "-translate-x-[100%]" : "translate-x-0"
-              )}
+              </CardContent>
+            </motion.div>
+
+            <motion.div
+              animate={{
+                x: step === "password" ? 0 : animationCardWidth,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="flex w-full min-w-full"
             >
-              {passwordConstants.map((constant) => {
-                return (
-                  <FormInput
-                    key={constant.id}
-                    id={constant.id}
-                    type={constant.type as "password"}
-                    label={constant.label}
-                    register={register}
-                  />
-                );
-              })}
-            </CardContent>
+              <CardContent
+                className={clsx(
+                  "flex flex-col gap-4 min-w-full",
+                  step === "password" ? "-translate-x-[100%]" : "translate-x-0"
+                )}
+              >
+                {passwordConstants.map((constant) => {
+                  return (
+                    <FormInput
+                      key={constant.id}
+                      id={constant.id}
+                      type={constant.type as "password"}
+                      label={constant.label}
+                      register={register}
+                    />
+                  );
+                })}
+              </CardContent>
+            </motion.div>
           </div>
           <CardFooter className="flex justify-start gap-2 mt-3">
             {step === "info" ? (
