@@ -11,18 +11,25 @@ import {
 import ErrorText from "../atom/text/ErrorText";
 import clsx from "clsx";
 
+interface IOption {
+  value: string;
+  label: string;
+}
+
 interface FomSelectProps {
   id: string;
   label: string;
   control: Control<any>;
-  placeholder?: string;
+  option: IOption[];
   error?: FieldError;
+  placeholder?: string;
 }
 
 const FormSelect: React.FC<FomSelectProps> = ({
   id,
   label,
   control,
+  option,
   error,
   placeholder,
 }) => {
@@ -44,8 +51,11 @@ const FormSelect: React.FC<FomSelectProps> = ({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="admin">관리자</SelectItem>
-              <SelectItem value="user">일반 사용자</SelectItem>
+              {option.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         )}

@@ -50,7 +50,7 @@ export default function Home() {
     }
 
     if (step === "password") {
-      handleSignup();
+      handleSignup(data);
     }
   };
 
@@ -62,12 +62,13 @@ export default function Home() {
     setStep("info");
   };
 
-  const handleSignup = () => {
+  const handleSignup = (data: ISchema) => {
     const { password, passwordConfirm } = errors;
     const { password: passwordValue, passwordConfirm: passwordConfirmValue } =
-      getValues();
+      data;
 
-    if (password || passwordConfirm || passwordValue !== passwordConfirmValue) {
+    if (passwordValue !== passwordConfirmValue) {
+      // if (password || passwordConfirm || passwordValue !== passwordConfirmValue) {
       toast({
         variant: "destructive",
         title: "비밀번호가 일치하지 않습니다.",
@@ -159,6 +160,10 @@ export default function Home() {
                   label="역할"
                   control={control}
                   placeholder="역할을 선택해주세요"
+                  option={[
+                    { label: "관리자", value: "admin" },
+                    { label: "일반 사용자", value: "user" },
+                  ]}
                   error={errors?.roles}
                 />
               </CardContent>
@@ -188,13 +193,7 @@ export default function Home() {
           </div>
           <CardFooter className="flex justify-start gap-2 mt-3">
             {step === "info" ? (
-              <Button
-                type="submit"
-                className={clsx(
-                  "flex items-center gap-2",
-                  step !== "info" && "hidden"
-                )}
-              >
+              <Button type="submit" className={clsx("flex items-center gap-2")}>
                 다음 단계로 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (

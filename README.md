@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Shadcn UI의 장단점
 
-## Getting Started
+- 장점:
 
-First, run the development server:
+  `일관성`: Shadcn UI는 일관된 디자인 시스템을 제공하여, 애플리케이션 전반에 걸쳐 일관된 사용자 경험을 보장합니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  `재사용성`: 컴포넌트 기반 접근 방식을 통해 개발자는 UI 요소를 쉽게 재사용할 수 있으며, 개발 시간을 단축시킵니다.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  `사용 편의성`: 사전에 정의된 컴포넌트와 테마를 사용하여 빠르게 프로토타이핑하고 개발할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 단점:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+  `커스터마이징의 제한`: 사전에 정의된 컴포넌트와 스타일을 사용함으로써, 특정 프로젝트의 맞춤형 디자인 요구사항을 충족시키기 어려울 수 있습니다.
 
-## Learn More
+  `학습 곡선`: Shadcn UI의 모든 컴포넌트와 기능을 효과적으로 사용하기 위해서는 해당 라이브러리에 대한 학습이 필요합니다.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`                         `
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# React Hook Form의 장단점
 
-## Deploy on Vercel
+- 장점:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  `성능`: 불필요한 리렌더링을 최소화하여 높은 성능을 제공합니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+  `간결성`: 복잡한 폼 로직을 쉽고 간결하게 관리할 수 있습니다.
+
+  `유효성 검사 통합`: Zod, Yup 등의 스키마 기반 유효성 검사 라이브러리와 쉽게 통합할 수 있습니다.
+
+- 단점:
+
+`학습 곡선`: React Hook Form의 모든 기능과 최적의 사용 방법을 익히는 데 시간이 걸릴 수 있습니다.
+유연성과 제한: 특정 경우에는 React Hook Form의 접근 방식이 프로젝트의 요구사항과 완벽하게 일치하지 않을 수 있습니다.
+
+---
+
+`                         `
+
+# Zod의 장단점
+
+- 장점:
+
+  `타입 안정성`: TypeScript와 함께 사용할 때, 컴파일 타임에 타입 안정성을 보장합니다.
+
+  `간결한 유효성 검사`: 스키마를 기반으로 한 간결하고 선언적인 유효성 검사 코드를 작성할 수 있습니다.
+
+  `자동 타입 추론`: 유효성 검사 규칙에 따라 자동으로 TypeScript 타입을 생성합니다.
+
+- 단점:
+
+  `학습 곡선`: Zod의 API와 스키마 정의 방법을 익히는 데 시간이 필요할 수 있습니다.
+
+  `커뮤니티와 자료`: 비교적 새로운 라이브러리이므로, 다른 유효성 검사 라이브러리에 비해 커뮤니티와 학습 자료가 적을 수 있습니다.
+
+---
+
+# `이들을 함께 사용함으로써 얻을 수 있는 이점`
+
+Shadcn UI, React Hook Form, 그리고 Zod를 함께 사용함으로써, 개발자는 성능이 우수하고 유지보수가 쉬운 반응형 웹 애플리케이션을 빠르게 구축할 수 있습니다.
+
+UI 컴포넌트의 일관성과 재사용성, 폼 처리의 효율성 및 간결성, 그리고 강력한 타입 안정성과 유효성 검사를 결합하여, 개발 과정을 최적화하고 프로젝트의 품질을 향상시킬 수 있습니다.
+
+---
+
+# `면접에서 나올 수 있는 질문과 대답`
+
+질문: React Hook Form과 Zod를 함께 사용하는 이유는 무엇인가요?
+
+대답: React Hook Form은 폼 상태 관리와 성능 최적화를 위해 설계되었으며, Zod는 스키마 기반의 유효성 검사와 타입 안정성을 제공합니다. 이 두 라이브러리를 함께 사용함으로써, 폼 처리 로직을 간결하게 유지하면서도 강력한 유효성 검사와 타입스크립트의 타입 추론 기능을 활용할 수 있습니다. 이는 개발 효율성을 높이고, 런타임 오류를 줄이며, 애플리케이션의 전반적인 품질을 향상시키는 데 도움이 됩니다.
+
+<!-- 요약 -->
+<!--
+- shadcn으로 일관되고 빠르게 디자인 구축 할수있었고, 재사용이 용이하여 개발 시간을 단축하는 효과를 느꼈습니다. 다만, 특정한 맞춤형 디자인 요구사항을 충족시키기에는 조금 어려울수 있을꺼 같습니다.
+- react-hook-from은 form 상태관리하기에는 좋으나, 러닝커브가 장벽이 좀 있는거 같아서, 모든 기능을 최적의 방법으로 사용할려면 시간이 좀 오래 걸릴꺼 같다는 생각이 듭니다.
+- zod는 typescript와 함께 사용할때, 타입 안전성을 보장하여 좋은거 같습니다. 작성하기도 편하고, 자동 타입 추론이 가능하여, 손에만 익으면 좀 더 안정적으로 개발을 할수 있을꺼 같습니다.
+  zod는 사용법을 익히는데 점만 빼면 유용하게 잘 이용할수 있을거 같습니다.
+ -->
