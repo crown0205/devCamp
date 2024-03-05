@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { infoSchema, passwordSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,17 +30,26 @@ export default function Home() {
   const cardRef = useRef<HTMLDivElement>(null);
   const currentSchema = step === "info" ? infoSchema : passwordSchema;
 
+  const form = useForm<ISchema>({
+    resolver: zodResolver(currentSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      roles: "",
+      password: "",
+      passwordConfirm: "",
+    },
+    mode: "onChange",
+    shouldFocusError: false,
+  });
   const {
     register,
     control,
     getValues,
     formState: { errors },
     handleSubmit,
-  } = useForm<ISchema>({
-    resolver: zodResolver(currentSchema),
-    mode: "onChange",
-    shouldFocusError: false,
-  });
+  } = form;
   const { toast } = useToast();
 
   const onSubmit = (data: ISchema) => {
@@ -129,85 +139,87 @@ export default function Home() {
           <CardDescription>필수 정보를 입력해볼게요.</CardDescription>
         </CardHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-full overflow-hidden relative"
-        >
-          <div className={clsx("flex")}>
-            <motion.div
-              animate={{
-                x: step === "info" ? 0 : -animationCardWidth,
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="flex w-full min-w-full"
-            >
-              <CardContent
-                className={clsx("pb-0 w-full flex flex-col gap-4")}
-                ref={cardRef}
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full overflow-hidden relative"
+          >
+            <div className={clsx("flex")}>
+              <motion.div
+                animate={{
+                  x: step === "info" ? 0 : -animationCardWidth,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="flex w-full min-w-full"
               >
-                {infoConstants.map((constant) => (
-                  <FormInput
-                    key={constant.id}
-                    label={constant.label}
-                    id={constant.id}
-                    placeholder={constant.placeholder}
-                    error={constant.error}
-                    register={register}
-                  />
-                ))}
-                <FormSelect
-                  id="roles"
-                  label="역할"
-                  control={control}
-                  placeholder="역할을 선택해주세요"
-                  option={[
-                    { label: "관리자", value: "admin" },
-                    { label: "일반 사용자", value: "user" },
-                  ]}
-                  error={errors?.roles}
-                />
-              </CardContent>
-            </motion.div>
-
-            <motion.div
-              animate={{
-                x: step === "password" ? -animationCardWidth : 0,
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="flex w-full min-w-full"
-            >
-              <CardContent className={clsx("flex flex-col gap-4 min-w-full")}>
-                {passwordConstants.map((constant) => {
-                  return (
+                <CardContent
+                  className={clsx("pb-0 w-full flex flex-col gap-4")}
+                  ref={cardRef}
+                >
+                  {infoConstants.map((constant) => (
                     <FormInput
                       key={constant.id}
                       id={constant.id}
-                      type={constant.type as "password"}
+                      control={control}
                       label={constant.label}
-                      register={register}
+                      placeholder={constant.placeholder}
                     />
-                  );
-                })}
-              </CardContent>
-            </motion.div>
-          </div>
-          <CardFooter className="flex justify-start gap-2 mt-3">
-            {step === "info" ? (
-              <Button type="submit" className={clsx("flex items-center gap-2")}>
-                다음 단계로 <ArrowRight className="h-4 w-4" />
-              </Button>
-            ) : (
-              <>
-                <Button className="flex" type="submit">
-                  계정 등록하기
+                  ))}
+                  <FormSelect
+                    id="roles"
+                    label="역할"
+                    control={control}
+                    placeholder="역할을 선택해주세요"
+                    option={[
+                      { label: "관리자", value: "admin" },
+                      { label: "일반 사용자", value: "user" },
+                    ]}
+                  />
+                </CardContent>
+              </motion.div>
+              <motion.div
+                animate={{
+                  x: step === "password" ? -animationCardWidth : 0,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="flex w-full min-w-full"
+              >
+                <CardContent className={clsx("flex flex-col gap-4 min-w-full")}>
+                  {passwordConstants.map((constant) => {
+                    return (
+                      <FormInput
+                        key={constant.id}
+                        control={control}
+                        id={constant.id}
+                        type={constant.type as "password"}
+                        label={constant.label}
+                      />
+                    );
+                  })}
+                </CardContent>
+              </motion.div>
+            </div>
+            <CardFooter className="flex justify-start gap-2 mt-3">
+              {step === "info" ? (
+                <Button
+                  type="submit"
+                  className={clsx("flex items-center gap-2")}
+                >
+                  다음 단계로 <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button variant="secondary" onClick={onPrev}>
-                  이전 단계로
-                </Button>
-              </>
-            )}
-          </CardFooter>
-        </form>
+              ) : (
+                <>
+                  <Button className="flex" type="submit">
+                    계정 등록하기
+                  </Button>
+                  <Button variant="secondary" onClick={onPrev}>
+                    이전 단계로
+                  </Button>
+                </>
+              )}
+            </CardFooter>
+          </form>
+        </Form>
       </Card>
     </main>
   );
